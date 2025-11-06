@@ -1,79 +1,33 @@
-# Fabric Example Mod
+# btw-presence-footsteps
+Port of the modloader version of Presence Footsteps, integrated with Better Than Wolves
 
-- [Quick start guide](#quick-start-guide)
-  - [Introduction to the folder structure](#introduction-to-the-folder-structure)
-  - [Creating your mod](#creating-your-mod)
-  - [Useful gradle commands](#useful-gradle-commands)
-- [More info](#more-info)
-- [License](#license)
+## Installation
+1. Add the latest version of the mod to your BTW instance's ``mods/`` folder
+2. Run the instance once, let it generate the ``presencefootsteps/`` directory in your ``mods/`` folder
+3. Download the resource archive from the latest version and extract its contents into ``presencefootsteps/packs/``
+4. Restart the game, or reload your resources via ``CTRL+P`` in order to hear PF in action!
 
-## Quick start guide
+## Usage
+* F9: Opens volume mixer
+* CTRL+P: Hot reloads only BTWPF resources 
+* CTRL+SHIFT+F: Enables verbose logging
 
-* Clone this repository
-* Download the according BTW-CE 3.0+ *intermediary* release
-* Drag&Drop the intermediary .zip file onto the *install.bat*
-* Wait till it fully finishes
-* Run the gradle task *build* and then *runClient*
+## About PF Packs
+PF packs consist of a resource pack component with audio data, and audio definitions that 
+define what context they play in. The ``user.packname.r0`` field in the ``userconfig.cfg`` file can be renamed
+to point to any PF pack within ``presencefootsteps/``. Outside of that, the most important files are:
+* ``acoustics.json``: Maps the sounds within the PF resource pack (or sounds registered by Minecraft/addons) to various contexts
+* ``blockmap.cfg``: Maps acoustic definitions to specific block IDs, metadata, and collision types (foliage, carpet)
+* ``primitivemap.cfg``: Maps acoustic definitions to block materials
 
-### Introduction to the folder structure
-
-**Build files:**
-
-| File                | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `build.gradle`      | Configures the compilation process.                      |
-| `gradle.properties` | Contains properties for Minecraft, fabric, and your mod. |
-| `settings.gradle`   | Configures the plugin repositories.                      |
-
-**Fabric files:**
-
-These files are located at `src/main/resources`.
-
-| File                    | Description                              | Additional information                                                                                                |
-| ----------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `fabric.mod.json`       | Contains metadata about your mod.        | [wiki:fabric_mod_json_spec](https://fabricmc.net/wiki/documentation:fabric_mod_json_spec)                             |
-| `modid.mixins.json`     | Contains a list of all your mixin files. | [wiki:mixin_registration](https://fabricmc.net/wiki/tutorial:mixin_registration)                                      |
-| `assets/modid/icon.png` | The icon of your mod.                    | [wiki:fabric_mod_json_spec#icon](https://fabricmc.net/wiki/documentation:fabric_mod_json_spec?s[]=icon#custom_fields) |
-
-
-### Creating your mod
-
-First of you must replace all occurrences of `modid` with the id of your mod.
-
-If your mod doesn't use mixins you can safely remove the mixin entry in your `fabric.mod.json` as well as delete any `*.mixin.json` files.
-
-This template has the legacy fabric api included in it's build script, more info about the api can be found at it's [github repo](https://github.com/Legacy-Fabric/fabric).
-If you know what you are doing you can also safely remove the api from the build script as it isn't required.
-
-### Useful gradle commands
-
-```sh
-# Compile your mod
-./gradlew build
-
-# Remove old build files
-./gradlew clean
-
-# Generate Minecraft sources
-./gradlew genSources
-
-# Launch a modded Minecraft client
-./gradlew runClient
-
-# Kill gradle if it's doing stupid things
-./gradlew --stop
-```
-
-## More info
-
-Additional tutorials and tips can be found in the [wiki](https://github.com/Legacy-Fabric/fabric-example-mod/wiki).
-
-For more detailed setup instructions please see the [fabric wiki](https://fabricmc.net/wiki/tutorial:setup).
-
-If you are new to fabric or Minecraft modding in general then [this wiki page](https://fabricmc.net/wiki/tutorial:primer) may help you.
+Namespace must be provided if you're targeting sounds or materials from a specific mod/addon. e.g. ``btw@stone`` 
+in the case of a ``primitivemap`` material def, and ``@btw:block.stone.break`` in the case of an ``acoustics``
+name field. Other usage beyond this can be inferred with the provided resource set and definitions. Verbose logging
+will tell you how definitions are being parsed, and the cases where there are no block or primitive definitions 
+properly set.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This template is available under the WTFPLv2 license. Do whatever you please.
 This project incorporates:
 * A precompiled version of [Tiny Remapper](https://github.com/FabricMC/tiny-remapper) (LGPL-3.0)
