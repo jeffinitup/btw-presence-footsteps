@@ -9,3 +9,4 @@ accessible field net/minecraft/src/EntityLivingBase isJumping Z
 accessible field net/minecraft/src/Entity isInWeb Z
 accessible field net/minecraft/src/Entity nextStepDistance I
 accessible field net/minecraft/src/FallbackResourceManager resourcePacks Ljava/util/List;
+accessible field net/minecraft/src/SimpleReloadableResourceManager reloadListeners Ljava/util/List;

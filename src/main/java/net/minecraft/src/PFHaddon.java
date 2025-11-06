@@ -11,7 +11,6 @@ import static com.jeffyjamzhd.BTWPresenceFootsteps.LOGGER;
 import com.jeffyjamzhd.BTWPresenceFootsteps;
 import eu.ha3.easy.EdgeModel;
 import eu.ha3.easy.EdgeTrigger;
-import eu.ha3.mc.convenience.Ha3StaticUtilities;
 import eu.ha3.mc.haddon.Identity;
 import eu.ha3.mc.haddon.SupportsFrameEvents;
 import eu.ha3.mc.haddon.implem.Ha3Utility;
@@ -23,7 +22,6 @@ import eu.ha3.mc.presencefootsteps.mcpackage.implem.NormalVariator;
 import eu.ha3.mc.presencefootsteps.mcpackage.interfaces.BlockMap;
 import eu.ha3.mc.presencefootsteps.mcpackage.interfaces.PrimitiveMap;
 import eu.ha3.mc.presencefootsteps.mcpackage.interfaces.Variator;
-import eu.ha3.mc.presencefootsteps.mod.UpdateNotifier;
 import eu.ha3.mc.presencefootsteps.mod.UserConfigSoundPlayerWrapper;
 import eu.ha3.mc.presencefootsteps.parsers.JasonAcoustics_Engine0;
 import eu.ha3.mc.presencefootsteps.parsers.PropertyBlockMap_Engine0;
@@ -53,6 +51,7 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 	public static final String FOR = "1.6.4";
 
 	private boolean hasTickedOnce = false;
+	private boolean improperlyLoaded = false;
 	
 	private File presenceDir;
 	private File packsFolder;
@@ -105,6 +104,12 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 			@Override
 			public void onTrueEdge()
 			{
+				if (improperlyLoaded) {
+					provideAssets();
+					Minecraft.getMinecraft().refreshResources();
+					printChat("Cold reloading from error state...");
+					return;
+				}
 				reloadEverything(true);
 				printChat("Quick reloading...");
 			}
@@ -115,6 +120,10 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 			}
 		});
 
+		this.provideAssets();
+	}
+
+	private void provideAssets() {
 		this.resourcePacks = Minecraft.getMinecraft().defaultResourcePacks;
 		for (File file : new File(this.presenceDir, "packs/").listFiles())
 		{
@@ -147,17 +156,22 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 		if (!this.currentPackFolder.exists())
 		{
 			PFHaddon.log("The pack '" + this.currentPackFolder.getPath() + "'does not exist!");
-			if (!nested)
-			{
-				this.currentPackFolder = new File(this.packsFolder, PFHaddon.DEFAULT_PACK_NAME + "/");
-				PFHaddon.log("The pack '" + this.currentPackFolder.getPath() + "'does not exist!");
-				
-				reloadEverything(true);
+			try {
+				if (!nested) {
+					this.currentPackFolder = new File(this.packsFolder, PFHaddon.DEFAULT_PACK_NAME + "/");
+					PFHaddon.log("The pack '" + this.currentPackFolder.getPath() + "' does not exist!");
+
+					reloadEverything(true);
+				} else
+					throw new Exception(
+							"Presence Footsteps cannot run because the default custom pack does not exist in the "
+									+ new File(this.packsFolder, PFHaddon.DEFAULT_PACK_NAME + "/").getAbsolutePath() + " folder.");
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+				this.improperlyLoaded = true;
+				return;
 			}
-			else
-				throw new RuntimeException(
-					"Presence Footsteps cannot run because the default custom pack does not exist in the "
-						+ new File(this.packsFolder, PFHaddon.DEFAULT_PACK_NAME + "/").getAbsolutePath() + " folder.");
+
 		}
 		
 		reloadBlockMapFromFile();
@@ -168,6 +182,7 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 		loadSoundsFromPack(this.currentPackFolder);
 		
 		this.isolator.setGenerator(new PFReaderH(this.isolator));
+		this.improperlyLoaded = false;
 	}
 	
 	private void reloadConfig()
@@ -305,29 +320,10 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 	@Override
 	public void onFrame(float semi)
 	{
+		// Check for player
 		EntityPlayer ply = Minecraft.getMinecraft().thePlayer;
 		if (ply == null)
 			return;
-		
-		this.isolator.onFrame();
-
-		// Check first tick
-		if (!this.hasTickedOnce) {
-			int bootCount = this.config.getInteger("user.boot.count");
-			boolean shouldShowHelp = this.config.getBoolean("user.boot.show");
-
-			if (shouldShowHelp && bootCount > 0) {
-				int remainingInfo = bootCount - 1;
-				printChat("Thank you for installing BTWPF! You can open the settings GUI by pressing F9.");
-				if (remainingInfo > 0)
-					printChat("This message will only show %d more time%s.".formatted(remainingInfo, remainingInfo > 1 ? "s" : ""));
-				this.config.setProperty("user.boot.count", remainingInfo);
-			}
-
-			this.config.commit();
-			this.config.save();
-			this.hasTickedOnce = true;
-		}
 
 		// Debug mode
 		boolean debugKeys = util().areKeysDown(29, 42, 33);
@@ -345,6 +341,31 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 			}
 		}
 
+		// Check if loaded properly
+		if (this.improperlyLoaded) {
+			return;
+		}
+
+		// Check first tick
+		if (!this.hasTickedOnce) {
+			int bootCount = this.config.getInteger("user.boot.count");
+			boolean shouldShowHelp = this.config.getBoolean("user.boot.show");
+
+			if (shouldShowHelp && bootCount > 0) {
+				int remainingInfo = bootCount - 1;
+				printChat("Thank you for installing BTWPF! You can open the settings GUI by pressing F9.");
+				if (remainingInfo > 0)
+					printChat("This message will only show %d more time%s.".formatted(remainingInfo, remainingInfo > 1 ? "s" : ""));
+				this.config.setProperty("user.boot.count", remainingInfo);
+			}
+
+			this.config.commit();
+			this.config.save();
+			this.hasTickedOnce = true;
+			return;
+		}
+
+		this.isolator.onFrame();
 		ply.nextStepDistance = Integer.MAX_VALUE;
 	}
 	
@@ -451,5 +472,10 @@ public class PFHaddon extends HaddonImpl implements SupportsFrameEvents, Resourc
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		this.reloadEverything(true);
+	}
+
+	public void onResourceManagerReloadPre() {
+		if (this.improperlyLoaded)
+			provideAssets();
 	}
 }

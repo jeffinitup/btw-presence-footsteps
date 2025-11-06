@@ -34,7 +34,9 @@ public class PFMinecraftMixin {
         addon.onFrame(this.prevFrameTime);
     }
 
-    @Inject(method = "runTick", at = @At("TAIL"))
-    private void updateInput(CallbackInfo ci) {
+    @Inject(method = "refreshResources", at = @At("HEAD"))
+    private void pf$supply(CallbackInfo ci) {
+        PFHaddon addon = BTWPresenceFootsteps.ADDON;
+        addon.onResourceManagerReloadPre();
     }
 }
