@@ -1,33 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "presence-footsteps",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "BTW Presence Footsteps",
+  "description": "Presence Footsteps port for Better Than Wolves",
   "authors": [
-    "Me!"
+    "Hurricaaane",
+    "jeffyjamzhd"
   ],
   "contact": {
-    "homepage": "https://legacyfabric.net/",
-    "sources": "https://github.com/Legacy-Fabric/fabric-example-mod"
+    "sources": "https://github.com/jeffinitup/btw-presence-footsteps"
   },
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
-  "environment": "*",
+  "license": "WTFPLv2",
+  "icon": "assets/presence-footsteps/icon.png",
+  "environment": "client",
   "entrypoints": {
-    "main": [
-      "net.fabricmc.example.ExampleMod"
-    ],
     "btw:addon": [
-      "btw.community.example.ExampleAddon"
+      "com.jeffyjamzhd.BTWPresenceFootsteps"
     ]
   },
   "custom": {
-    "btw:addon_prefix": "EX"
+    "btw:addon_prefix": "BTWPF"
   },
   "mixins": [
-    "modid.mixins.json"
+    "presence-footsteps.mixins.json"
   ],
+  "accessWidener": "presence-footsteps.accesswidener",
   "depends": {
     "fabricloader": ">=0.14.19",
     "minecraft": "1.6.4"
