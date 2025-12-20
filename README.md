@@ -1,5 +1,5 @@
 # btw-presence-footsteps
-Port of the modloader version of Presence Footsteps, integrated with Better Than Wolves
+Port of the Risugami's Modloader version of Presence Footsteps, integrated into Better Than Wolves CE
 
 ## Installation
 1. Add the latest version of the mod to your BTW instance's ``mods/`` folder
@@ -28,6 +28,6 @@ properly set.
 
 ## License
 
-This template is available under the WTFPLv2 license. Do whatever you please.
+This project is available under the WTFPLv2 license. Do whatever you please.
 This project incorporates:
 * A precompiled version of [Tiny Remapper](https://github.com/FabricMC/tiny-remapper) (LGPL-3.0)

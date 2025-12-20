@@ -1,6 +1,6 @@
 package com.jeffyjamzhd;
 
-import btw.BTWAddon;
+import api.BTWAddon;
 
 import net.minecraft.src.PFHaddon;
 import org.apache.logging.log4j.LogManager;

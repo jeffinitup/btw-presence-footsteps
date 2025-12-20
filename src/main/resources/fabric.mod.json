@@ -3,7 +3,7 @@
   "id": "presence-footsteps",
   "version": "${version}",
   "name": "BTW Presence Footsteps",
-  "description": "Presence Footsteps port for Better Than Wolves",
+  "description": "Presence Footsteps integration for Better Than Wolves CE",
   "authors": [
     "Hurricaaane",
     "jeffyjamzhd"
@@ -28,6 +28,7 @@
   "accessWidener": "presence-footsteps.accesswidener",
   "depends": {
     "fabricloader": ">=0.14.19",
-    "minecraft": "1.6.4"
+    "minecraft": "1.6.4",
+    "btw" : ">=3.0.0"
   }
 }
